@@ -1,30 +1,52 @@
-import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import NavBar from "./components/Navbar";
-import { MdVerifiedUser, MdGroup, MdCarCrash } from "react-icons/md";
+import { MdVerifiedUser, MdGroup, MdCarCrash, MdList, MdLineAxis, MdAddChart } from "react-icons/md";
+import { Link, Outlet } from "react-router-dom";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="flex flex-row h-full w-full relative">
-      <NavBar>
+    <div className="flex flex-row h-full w-full relative font-sans">
+      <NavBar componentLink={Link}>
         <NavBar.Header>
           <img src={viteLogo} className="w-6 h-6" alt="Vite logo" />
         </NavBar.Header>
         <NavBar.Content>
-          <NavBar.Item label="Defesa" icon={MdVerifiedUser}>
-            <NavBar.SubGroup>1</NavBar.SubGroup>
-            <NavBar.SubGroup>2</NavBar.SubGroup>
-            <NavBar.SubGroup>3</NavBar.SubGroup>
+          <NavBar.Item label="Layout" icon={MdVerifiedUser}>
+            <NavBar.Group>
+              <NavBar.SubGroup href="/layout/lists" label="Lists" />
+            </NavBar.Group>
+            <NavBar.Group>
+              <NavBar.SubGroup label="Chart examples">
+                <NavBar.SubGroupItem href="/layout/charts/chart1" icon={MdLineAxis} label="chart 1" />
+                <NavBar.SubGroupItem href="/layout/charts/chart2" icon={MdLineAxis} label="chart 2" />
+                <NavBar.SubGroupItem href="/layout/charts/chart3" icon={MdLineAxis} label="chart 3" />
+              </NavBar.SubGroup>
+            </NavBar.Group>
+            <NavBar.Group>
+              <NavBar.SubGroup label="Examples">
+                <NavBar.SubGroupItem href="/layout/examples/teste1" icon={MdAddChart} label="teste 1" />
+                <NavBar.SubGroupItem href="/layout/examples/teste2" icon={MdAddChart} label="teste 2" />
+                <NavBar.SubGroupItem href="/layout/examples/teste3" icon={MdAddChart} label="teste 3" />
+              </NavBar.SubGroup>
+            </NavBar.Group>
           </NavBar.Item>
           <NavBar.Item label="Usuários" icon={MdGroup}>
-            <NavBar.SubGroup>1</NavBar.SubGroup>
-            <NavBar.SubGroup>2</NavBar.SubGroup>
-            <NavBar.SubGroup>3</NavBar.SubGroup>
+            <NavBar.Group>
+              <NavBar.SubGroup href="/usuarios/adicionar" label="Adicionar" />
+            </NavBar.Group>
+            <NavBar.Group>
+              <NavBar.SubGroup href="/usuarios/remover" label="Remover" />
+            </NavBar.Group>
+            <NavBar.Group>
+              <NavBar.SubGroup label="Listar">
+                <NavBar.SubGroupItem href="/usuarios/lista1" icon={MdList} label="Lista 1" />
+                <NavBar.SubGroupItem href="/usuarios/lista2" icon={MdList} label="Lista 2" />
+                <NavBar.SubGroupItem href="/usuarios/lista3" icon={MdList} label="Lista 3" />
+              </NavBar.SubGroup>
+            </NavBar.Group>
           </NavBar.Item>
-          <NavBar.Item label="Carros" icon={MdCarCrash}></NavBar.Item>
+          <NavBar.Item href="/veiculos" label="Carros" icon={MdCarCrash} />
         </NavBar.Content>
         <NavBar.Footer>
           <a href="https://react.dev" target="_blank">
@@ -33,13 +55,8 @@ function App() {
         </NavBar.Footer>
       </NavBar>
       <div className="flex flex-col justify-center items-center w-full">
+        <Outlet />
         <h1>Vite + React</h1>
-        <div className="card">
-          <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test HMR
-          </p>
-        </div>
         <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
       </div>
     </div>
