@@ -17,3 +17,7 @@ body {
   font-family: "Montserrat";
   src: url("../public/Montserrat-Variable.ttf");
 }
+
+.scroll-hidden::-webkit-scrollbar { 
+	display: none;
+}

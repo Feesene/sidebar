@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import clsx, { ClassValue } from "clsx";
 import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { IconType } from "react-icons";
-import { MdArrowDropDown, MdArrowRight } from "react-icons/md";
+import { MdArrowForwardIos } from "react-icons/md";
+import { twMerge } from "tailwind-merge";
+
+const merge = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
+};
 
 interface INavBar {
   children?: React.ReactNode;
@@ -24,12 +30,14 @@ interface INavBarContext {
   selected?: string;
   changeSelected: (value?: string) => void;
   Link?: any;
+  path?: string;
 }
 
 export const NavBar = ({ children, componentLink }: INavBar) => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [sub, setSub] = useState<ReactNode>();
   const [selected, setSelected] = useState<string>();
+  const [path, setPath] = useState<string | undefined>(location.pathname);
   const [Link] = useState(componentLink);
 
   const changeExpanded = (isSelect: boolean) => {
@@ -54,16 +62,24 @@ export const NavBar = ({ children, componentLink }: INavBar) => {
         changeSelected,
         selected,
         Link,
+        path,
       }}
     >
-      <div className="flex flex-row absolute h-full select-none">
+      <div
+        onClick={() => {
+          setPath(location.pathname);
+        }}
+        className="flex flex-row absolute h-full select-none"
+      >
         <div className="flex flex-col min-w-16 h-full bg-[#ededed] overflow-hidden justify-between items-center z-20">
           {children}
         </div>
         {expanded && sub && (
-          <div className="flex flex-col gap-1 overflow-y-auto animate-fade-right animate-duration-200 min-w-64 h-full bg-slate-50 overflow-hidden justify-start items-start py-4 px-6">
-            {selected && <h1 className="font-medium text-lg text-neutral-400 mb-2">{selected}</h1>}
-            {sub}
+          <div className="flex flex-col bg-slate-50 h-full py-4">
+            {selected && <h1 className="font-medium text-lg text-neutral-400 mb-2 px-6">{selected}</h1>}
+            <div className="flex flex-col gap-1 overflow-y-auto animate-fade-right animate-duration-200 min-w-64 overflow-hidden justify-start items-start px-6">
+              {sub}
+            </div>
           </div>
         )}
       </div>
@@ -77,7 +93,9 @@ const NavBarHeader = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const NavBarContent = ({ children }: { children?: React.ReactNode }) => {
-  return <div className="flex flex-col w-full items-center justify-start gap-2 h-[76%] overflow-auto">{children}</div>;
+  return (
+    <div className="flex flex-col w-full items-center justify-start gap-2 h-[76%] overflow-auto scroll-hidden">{children}</div>
+  );
 };
 
 const NavBarFooter = ({ children }: { children?: React.ReactNode }) => {
@@ -88,27 +106,29 @@ const NavBarItem = ({
   children,
   href,
   label,
+  link = false,
   icon: IconComponent,
 }: {
   children?: React.ReactNode;
   icon: IconType;
   href?: string;
+  link?: boolean;
   label: string;
 }) => {
-  const { changeExpanded, Link, selected, expanded, changeSelected, changeSub } = UseNavBar();
+  const { changeExpanded, path, Link, selected, expanded, changeSelected, changeSub } = UseNavBar();
   const [A, setA] = useState<any>("span");
 
   useEffect(() => {
-    if (href && Link) {
+    if (href && link && Link) {
       setA(Link);
     }
-  }, [Link, href]);
+  }, [Link, link, href]);
 
   return (
     <A to={href} className="w-full">
       <div
         onClick={(e) => {
-          if (!href) {
+          if (!link) {
             if (e.currentTarget.childNodes[1] && e.currentTarget.childNodes[1].hasChildNodes()) {
               changeSub(children);
               changeSelected(label);
@@ -128,9 +148,10 @@ const NavBarItem = ({
           changeSelected();
           changeExpanded(false);
         }}
-        className={`flex flex-col w-full items-center transition-all duration-300 justify-center h-12 cursor-pointer hover:text-green-500 ${
-          label == selected ? "text-green-500" : "text-slate-400"
-        } `}
+        className={merge(
+          `flex flex-col w-full items-center transition-all duration-300 justify-center h-12 cursor-pointer hover:text-green-500`,
+          path && href && path.startsWith(href) ? "text-green-500" : "text-slate-400"
+        )}
       >
         <IconComponent size={"20px"} />
         <div className="hidden">{children}</div>
@@ -147,38 +168,61 @@ const NavBarGroup = ({ children }: { children?: React.ReactNode }) => {
   );
 };
 
-const NavBarSubGroup = ({ children, href, label }: { children?: React.ReactNode; label?: string; href?: string }) => {
+const NavBarSubGroup = ({
+  children,
+  href,
+  link = false,
+  label,
+}: {
+  children?: React.ReactNode;
+  link?: boolean;
+  label?: string;
+  href?: string;
+}) => {
+  const { sub, Link, path } = UseNavBar();
   const [expanded, setExpanded] = useState<boolean>(false);
-  const { sub, Link } = UseNavBar();
   const [A, setA] = useState<any>("span");
 
   useEffect(() => {
-    if (href && Link) {
+    if (href && link && Link) {
       setA(Link);
     } else {
       setA("span");
     }
-  }, [Link, href]);
+  }, [Link, link, href]);
 
   useEffect(() => {
-    setExpanded(false);
+    if (path && href && path.startsWith(href)) {
+      setExpanded(true);
+    } else setExpanded(false);
   }, [sub]);
 
   return (
-    <A to={href} className="w-full teste">
+    <A to={href} className="w-full">
       <div
-        onClick={() => {
-          if (!href) setExpanded(!expanded);
-        }}
-        className={`flex flex-col text-sm w-full items-center justify-start cursor-pointer text-neutral-400 hover:text-neutral-600 ${
-          expanded && "text-neutral-600 font-medium"
-        }`}
+        className={merge(
+          "flex flex-col text-sm w-full cursor-pointer items-center justify-start text-neutral-400 hover:text-neutral-600",
+          expanded && !link && "text-neutral-600 font-medium",
+          !link && path && href && path.startsWith(href) && "text-neutral-800 font-medium",
+          link && path && href && path.startsWith(href) && "text-green-600 hover:text-green-600 font-medium"
+        )}
       >
-        <div className="flex flex-row justify-between items-center w-full">
-          {label} {!href && !expanded && <MdArrowRight size={18} />} {!href && expanded && <MdArrowDropDown size={18} />}
+        <div className="relative flex flex-row justify-between items-center w-full">
+          {label}
+          <div
+            onClick={() => {
+              if (!link) setExpanded(!expanded);
+            }}
+            className="py-4 w-full h-full absolute"
+          />
+          <span className="text-neutral-400 hover:text-neutral-400">
+            {!link && <MdArrowForwardIos size={14} className={`transition-all ${expanded && "rotate-90"}`} />}
+          </span>
         </div>
 
-        <div className={`flex flex-col w-full mt-2 ${!expanded && "hidden"}`}>{children}</div>
+        <div className={`flex flex-col w-full animate-fade-down animate-duration-75 mt-2 ${(!expanded || link) && "hidden"}`}>
+          {children}
+        </div>
       </div>
     </A>
   );
@@ -188,24 +232,31 @@ const NavBarSubGroupItem = ({
   icon: IconComponent,
   label,
   href,
+  link = false,
 }: {
   children?: React.ReactNode;
   icon: IconType;
   href?: string;
   label: string;
+  link?: boolean;
 }) => {
-  const { Link } = UseNavBar();
+  const { Link, path } = UseNavBar();
   const [A, setA] = useState<any>("span");
 
   useEffect(() => {
-    if (href && Link) {
+    if (href && link && Link) {
       setA(Link);
     }
-  }, [Link, href]);
+  }, [Link, link, href]);
 
   return (
     <A to={href} className="w-full">
-      <div className="flex flex-row w-full font-light items-center justify-start py-2 pl-4 gap-2 cursor-pointer text-neutral-400 hover:text-neutral-600">
+      <div
+        className={merge(
+          "flex flex-row w-full font-light items-center justify-start py-2 pl-4 gap-2 cursor-pointer text-neutral-400 hover:text-neutral-600 hover:font-medium",
+          link && path && href && path.startsWith(href) && "text-green-600 hover:text-green-600 font-medium"
+        )}
+      >
         <IconComponent size={"16px"} />
         {label}
       </div>
