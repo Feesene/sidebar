@@ -2,7 +2,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import NavBar from "./components/Navbar";
 import { MdList, MdLineAxis, MdAddChart } from "react-icons/md";
-import { PiCircuitry, PiCircuitryFill, PiUsers, PiUsersFill, PiCar, PiCarFill } from "react-icons/pi";
+import { PiCircuitry, PiCircuitryFill, PiUsers, PiUsersFill, PiCar, PiCarFill, PiHouse, PiHouseFill } from "react-icons/pi";
 import { Link, Outlet } from "react-router-dom";
 
 function App() {
@@ -13,10 +13,11 @@ function App() {
           <img src={viteLogo} className="w-6 h-6" alt="Vite logo" />
         </NavBar.Header>
         <NavBar.Content>
+          <NavBar.Item label="Home" href="/" icon={PiHouse} activeIcon={PiHouseFill} />
           <NavBar.Item label="Layout" icon={PiCircuitry} activeIcon={PiCircuitryFill}>
             <NavBar.Group href="/layout/lists" label="Lists" />
             <NavBar.Group label="Chart examples">
-              <NavBar.GroupItem href="/layout/charts/chart1" icon={MdLineAxis} label="chart 1" />
+              <NavBar.GroupItem href="/chart1" icon={MdLineAxis} label="chart 1" />
               <NavBar.GroupItem href="/layout/charts/chart2" icon={MdLineAxis} label="chart 2" />
               <NavBar.GroupItem href="/layout/charts/chart3" icon={MdLineAxis} label="chart 3" />
             </NavBar.Group>
@@ -44,9 +45,11 @@ function App() {
         </NavBar.Footer>
       </NavBar>
       <div className="flex flex-col justify-center items-center w-full">
-        <Outlet />
         <h1>Vite + React</h1>
-        <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+        <h1>Pagina: </h1>
+        <div className="font-semibold text-lg">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ const router = createBrowserRouter([
       { path: "/layout/examples/teste1", element: <>/layout/examples/teste1</> },
       { path: "/layout/examples/teste2", element: <>/layout/examples/teste2</> },
       { path: "/layout/examples/teste3", element: <>/layout/examples/teste3</> },
-      { path: "/layout/charts/chart1", element: <>/charts/chart1</> },
+      { path: "/chart1", element: <>/charts/chart1</> },
       { path: "/layout/charts/chart2", element: <>/charts/chart2</> },
       { path: "/layout/charts/chart3", element: <>/charts/chart3</> },
       { path: "/usuarios/adicionar", element: <>/usuarios/adicionar</> },

@@ -123,13 +123,17 @@ const NavBarItem = ({
   useEffect(() => {
     if (href && Link) {
       setA(Link);
+    } else if (href && !Link) {
+      setA("a");
+    } else {
+      setA("span");
     }
   }, [Link, href]);
 
   useEffect(() => {
     if (selected == label) {
       return setActived(true);
-    } else if (!selected && path && href && path.startsWith(href)) {
+    } else if (!selected && path && href && path == href) {
       return setActived(true);
     } else if (href) {
       return setActived(false);
@@ -138,65 +142,65 @@ const NavBarItem = ({
     }
 
     if (!children) return;
-    let teste = false;
+    let testing = false;
     const newChildren: any = children;
     newChildren &&
       newChildren.map((child: ReactElement) => {
         if (child && child.props && child.props.href) {
-          if (child.props.href.startsWith(path)) {
-            teste = true;
+          if (child.props.href == path) {
+            testing = true;
           }
         }
         if (child && child.props && child.props.children) {
           const subChilds: ReactElement[] = child.props.children;
           subChilds.map((subChild) => {
             if (subChild && subChild.props && subChild.props.href) {
-              if (subChild.props.href.startsWith(path)) {
-                teste = true;
+              if (subChild.props.href == path) {
+                testing = true;
               }
             }
           });
-          if (child && child.props && child.props.href && child.props.href.startsWith(path)) {
-            teste = true;
+          if (child && child.props && child.props.href && child.props.href == path) {
+            testing = true;
           }
         }
       });
 
-    setActived(teste);
+    setActived(testing);
   }, [children, href, label, selected, path]);
 
   return (
-    <A to={href} className="w-full">
-      <div
-        onClick={(e) => {
-          if (!href) {
-            if (e.currentTarget.childNodes[1] && e.currentTarget.childNodes[1].hasChildNodes()) {
-              changeGroup(children);
-              changeSelected(label);
+    <A
+      href={href}
+      to={href}
+      onClick={(e: any) => {
+        if (!href) {
+          if (e.currentTarget.childNodes[1] && e.currentTarget.childNodes[1].hasChildNodes()) {
+            changeGroup(children);
+            changeSelected(label);
 
-              if (!selected) {
-                changeExpanded(!expanded);
-              }
-
-              if (label == selected) {
-                changeExpanded(!expanded);
-                changeSelected();
-              }
-
-              return;
+            if (!selected) {
+              changeExpanded(!expanded);
             }
+
+            if (label == selected) {
+              changeExpanded(!expanded);
+              changeSelected();
+            }
+
+            return;
           }
-          changeSelected();
-          changeExpanded(false);
-        }}
-        className={merge(
-          `flex flex-col w-full items-center transition-all duration-300 justify-center h-12 cursor-pointer hover:text-green-500`,
-          actived ? "text-green-500" : "text-slate-400"
-        )}
-      >
-        {ActiveIconComponent && actived ? <ActiveIconComponent size={"20px"} /> : <IconComponent size={"20px"} />}
-        <div className="hidden">{children}</div>
-      </div>
+        }
+        changeSelected();
+        changeExpanded(false);
+      }}
+      className={merge(
+        `flex flex-col w-full items-center transition-all duration-300 justify-center h-12 cursor-pointer hover:text-green-500`,
+        actived ? "text-green-500" : "text-slate-400"
+      )}
+    >
+      {ActiveIconComponent && actived ? <ActiveIconComponent size={"20px"} /> : <IconComponent size={"20px"} />}
+      <div className="hidden">{children}</div>
     </A>
   );
 };
@@ -210,6 +214,8 @@ const NavBarGroup = ({ children, href, label }: { children?: React.ReactNode; la
   useEffect(() => {
     if (href && Link) {
       setA(Link);
+    } else if (href && !Link) {
+      setA("a");
     } else {
       setA("span");
     }
@@ -222,54 +228,54 @@ const NavBarGroup = ({ children, href, label }: { children?: React.ReactNode; la
   }, [actived]);
 
   useEffect(() => {
-    if (path && href && path.startsWith(href)) {
+    if (path && href && path == href) {
       setActived(true);
     } else {
       setActived(false);
     }
 
     if (!children) return;
-    let teste = false;
+    let testing = false;
     const newChildren: any = children;
     newChildren &&
       newChildren.map((child: ReactElement) => {
         if (child && child.props && child.props.href) {
-          if (child.props.href.startsWith(path)) {
-            teste = true;
+          if (child.props.href == path) {
+            testing = true;
           }
         }
       });
 
-    setActived(teste);
+    setActived(testing);
   }, [children, href, label, expanded, path]);
 
   return (
     <div className="flex flex-col py-2 w-full items-center justify-center cursor-pointer text-neutral-400 hover:text-green-200">
-      <A to={href} className="w-full">
-        <div
-          className={merge(
-            "flex flex-col text-sm w-full cursor-pointer items-center justify-start text-neutral-400 hover:text-neutral-600",
-            expanded && !href && "text-neutral-600 font-medium",
-            actived && !href && "text-neutral-800 font-medium",
-            actived && href && "text-green-600 hover:text-green-600 font-medium"
-          )}
-        >
-          <div className="relative flex flex-row justify-between items-center w-full">
-            {label}
-            <div
-              onClick={() => {
-                if (!href) setExpanded(!expanded);
-              }}
-              className="py-4 w-full h-full absolute"
-            />
-            <span className="text-neutral-400 hover:text-neutral-400">
-              {!href && <MdArrowForwardIos size={14} className={`transition-all ${expanded && "rotate-90"}`} />}
-            </span>
-          </div>
+      <A
+        to={href}
+        href={href}
+        className={merge(
+          "flex flex-col text-sm w-full cursor-pointer items-center justify-start text-neutral-400 hover:text-neutral-600",
+          expanded && !href && "text-neutral-600 font-medium",
+          actived && !href && "text-neutral-800 font-medium",
+          actived && href && "text-green-600 hover:text-green-600 font-medium"
+        )}
+      >
+        <div className="relative flex flex-row justify-between items-center w-full">
+          {label}
+          <div
+            onClick={() => {
+              if (!href) setExpanded(!expanded);
+            }}
+            className="py-4 w-full h-full absolute"
+          />
+          <span className="text-neutral-400 hover:text-neutral-400">
+            {!href && <MdArrowForwardIos size={14} className={`transition-all ${expanded && "rotate-90"}`} />}
+          </span>
+        </div>
 
-          <div className={`flex flex-col w-full animate-fade-down animate-duration-75 mt-2 ${(!expanded || href) && "hidden"}`}>
-            {children}
-          </div>
+        <div className={`flex flex-col w-full animate-fade-down animate-duration-75 mt-2 ${(!expanded || href) && "hidden"}`}>
+          {children}
         </div>
       </A>
     </div>
@@ -293,11 +299,15 @@ const NavBarGroupItem = ({
   useEffect(() => {
     if (href && Link) {
       setA(Link);
+    } else if (href && !Link) {
+      setA("a");
+    } else {
+      setA("span");
     }
   }, [Link, href]);
 
   useEffect(() => {
-    if (path && href && path.startsWith(href)) {
+    if (path && href && path == href) {
       setActived(true);
     } else {
       setActived(false);
@@ -305,16 +315,16 @@ const NavBarGroupItem = ({
   }, [path, href]);
 
   return (
-    <A to={href} className="w-full">
-      <div
-        className={merge(
-          "flex flex-row w-full font-light items-center justify-start py-2 pl-4 gap-2 cursor-pointer text-neutral-400 hover:text-neutral-600 hover:font-medium",
-          actived && "text-green-600 hover:text-green-600 font-medium"
-        )}
-      >
-        <IconComponent size={"16px"} />
-        {label}
-      </div>
+    <A
+      to={href}
+      href={href}
+      className={merge(
+        "flex flex-row w-full font-light items-center justify-start py-2 pl-4 gap-2 cursor-pointer text-neutral-400 hover:text-neutral-600 hover:font-medium",
+        actived && "text-green-600 hover:text-green-600 font-medium"
+      )}
+    >
+      <IconComponent size={"16px"} />
+      {label}
     </A>
   );
 };
